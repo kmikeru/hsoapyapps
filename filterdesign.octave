@@ -1,0 +1,35 @@
+pkg load signal;
+
+n = 102;
+f = [0 0.015 0.1 1]
+a = [1 1 0.0 0]
+
+% remez(n, f, a)
+
+% *********************************************
+% Run Remez / Parks McClellan filter design
+% *********************************************
+h = remez(n, f, a);
+allOneString = sprintf('%.10f, ' , h);
+allOneString = allOneString(1:end-1);% strip final comma
+disp(allOneString);
+% force row vector (OctaveForge and Matlab's "remez" differ)
+h = reshape(h, 1, prod(size(h))); 
+% *********************************************
+% Plot the results
+% *********************************************
+figure(1); hold on;
+
+% zero-pad the impulse response to set frequency resolution
+% of the FFT
+h = [h, zeros(1, 1000)];
+
+% frequency base
+npts = size(h, 2);
+fbase = (0:npts-1)/npts; 
+
+pl = plot(fbase, 20*log10(abs((fft(h)+1e-15))), 'b');
+xlim([0, 0.5]);
+
+waitfor(pl);
+disp('Now that Figure Object has been destroyed I can exit');
